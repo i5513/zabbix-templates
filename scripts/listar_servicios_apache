@@ -1,0 +1,1035 @@
+#!/usr/bin/perl -w
+# 20161104 Monitoring apache with zabbix,
+# taking adventage of low level discovery rules
+# By i5513, working on Fujitsu
+
+use Cwd;
+use File::Basename;
+use Data::Dumper;
+use IO::Socket;
+use Getopt::Long;
+use strict;
+
+END { return 254 if $ENV{SSH_CONNECTION} && $? == 255 }
+
+my $check_connections = 0;
+my $show_errors = 0;
+my $quietly = 0;
+
+my $csv = 0;
+my ($zabbix_balancers, $zabbix_directories, $zabbix_proxypasses, 
+    $zabbix_weblogics, $zabbix_workers,$zabbix_workers_discard,
+    $zabbix_directories_uniq,, $zabbix_proxypasses_uniq,
+    $zabbix_logfiles, $zabbix_errorlogfiles,
+    $zabbix_connections, $zabbix_wrong_connections) = (0)x12;
+
+my $result = GetOptions (
+        "zabbix-balancers|zb" => \$zabbix_balancers,
+        "zabbix-directories|zd" => \$zabbix_directories,
+        "zabbix-directories-unique|zdu" => \$zabbix_directories_uniq,
+        "zabbix-proxypasses|zp" => \$zabbix_proxypasses,
+        "zabbix-proxypasses-unique|zpu" => \$zabbix_proxypasses_uniq,
+        "zabbix-logfiles|zl" => \$zabbix_logfiles,
+        "zabbix-errorlogfiles|zel" => \$zabbix_errorlogfiles,
+        "zabbix-weblogics|zwl" => \$zabbix_weblogics,
+        "zabbix-workers|zw" => \$zabbix_workers,
+        "zabbix-workersDiscard|zwd" => \$zabbix_workers_discard,
+        "zabbix-connections|zc" => \$zabbix_connections,
+        "zabbix-wrongconnections|zwc" => \$zabbix_wrong_connections,
+        "csv" => \$csv,
+                "check|c" => \$check_connections,
+        "errors|e" => \$show_errors,
+        "quiet|q" => \$quietly
+);
+if ($show_errors != 0)
+{
+    $check_connections = 1;
+}
+
+my %info;
+
+my $vhost = "default";    
+my @vhosts = ("default");
+
+sub check_port
+{
+    my ($ip,$port,$vhost,$n)=@_;
+    if (not defined $n)
+    {
+        $n = 1;
+    }
+    my $i=$n;
+    while ($i ne 0)
+    {
+        my $nc = IO::Socket::INET->new( Proto       => "tcp",
+                    PeerAddr    => $ip,
+                    PeerPort    => $port,
+                    Reuse       => 1,
+                    Timeout     => 3);
+        if (defined $nc)
+        {
+            return $n-$i+1;
+        }
+        $i = $i-1;
+    }
+    # There is a communication problem ...
+    if ($show_errors != 0)
+    {   
+        printf STDERR "$vhost: Error, does not connect with $ip:$port\n";
+    }
+    return 0;
+}
+
+sub process_config
+{
+    my ($info, $file, $root_config, $vhost) = @_;
+    # Flags
+    my $worker = 0;   
+    my $bal = 0;  
+    my $loc = 0;  
+
+    open my $conf, "<", "$file" or die "I cant open file $file";
+    while (<$conf>)
+    {
+        chomp; s,,,g;
+        if (/^[^#]*worker\.c/)
+        {
+            $worker = 1;
+            next;
+        }
+        elsif ($worker == 1)
+        {
+            if (/^\s*(\S*)\s*(\d+)\s*$/)
+            {
+                $info->{general}{worker}{$1}=$2;
+            }
+            if (/^\s*<\/IfModule/i)
+            {
+                $worker = 0;
+            }
+        }
+        elsif (/^\s*DocumentRoot\s+"?([^"\s]*)"?/i)
+        {
+            $info->{vhost}{$vhost}{root}{$1}=1;
+            $info->{directory}{$1}{vhost}{$vhost}=1;
+        }
+        elsif (/^\s*<Directory\s*\"([^"]*)\"/i)
+        {
+            $info->{vhost}{$vhost}{directory}{$1}=1;
+            $info->{directory}{$1}{vhost}{$vhost}=1;
+        }
+        elsif (/^\s*ServerName\s*(\S*)\s*$/i)
+        {
+            push @vhosts, $vhost;
+            $vhost = $1;
+			my $info_vhost=$info->{vhost}{$vhost};
+            $info_vhost->{logfile} = ""
+				unless defined $info->{vhost}{$vhost}{logfile};
+            $info_vhost->{errorlogfile} = ""
+				unless defined $info->{vhost}{$vhost}{errorlogfile};
+        }
+        elsif (/^\s*<\/VirtualHost/i)
+        {
+            $vhost = pop @vhosts;
+        }
+        elsif (/^\s*<Proxy\s+balancer:\/\/([^\/]*)\/?>/i)
+        {
+            $bal = $1;
+            $info->{vhost}{$vhost}{balance}{$bal} = {}
+                if (not defined ($info->{vhost}{$vhost}{balance}{$bal}));
+        }
+        elsif (/^\s*BalancerMember\s+(\S+).*$/i)
+        {
+            my $member = $1;
+			my $info_vhost_bal = $info->{vhost}{$vhost}{balance}{$bal};
+            $info_vhost_bal->{balancerMembers}{$member} = {};
+            if ($member =~ /^([^:]*):\/\/([^:\/]*)(:(\d+))?(\/.*)?$/)
+            {
+                my ($proto, $ip, $port,$path ) = ($1, $2, $4 || 80, $5 || "");
+                if ($proto =~ /https/ and $port == 80) { $port = 443; }
+                my $aux = scalar gethostbyname ("$ip");
+                if (defined ($aux))
+                {
+                    $ip = inet_ntoa($aux);
+                }
+                $info_vhost_bal->{balancerMembers}{$member}{proto} = $proto;
+                $info_vhost_bal->{balancerMembers}{$member}{ip} = $ip;
+                $info_vhost_bal->{balancerMembers}{$member}{port} = $port;
+                $info_vhost_bal->{balancerMembers}{$member}{path} = $path;
+                $info->{connections}{$ip}{$port}{proto}{$proto} = 1;
+                $info->{connections}{$ip}{$port}{balance}{$bal} = 1;
+                $info->{connections}{$ip}{$port}{balanceMember}{$member} = 1;
+                $info->{connections}{$ip}{$port}{vhost}{$vhost} = 1;
+            }
+            else
+            {
+                printf "This should not happen (balancer member$member)";
+            }
+        }
+        elsif (/^\s*ProxySet.*lbmethod=(\S*)/i)
+        {
+            $info->{vhost}{$vhost}{balance}{$bal}{lbmethod}=$1;
+        }
+        elsif (/^\s*Include\s+(\S*)\s*$/i)
+        {
+            my $include=$1;
+            push @{$info->{vhost}{$vhost}{include}},$include;
+            if (/\*/)
+            {
+                my @files=grep { -f } glob ("$include");
+                foreach my $f (@files)
+                {
+                    process_config ($info, $f, $root_config, $vhost);
+                }
+            }
+            else
+            {
+                process_config ($info, $include, $root_config, $vhost);
+            }
+        }
+        elsif (/^\s*<Location\s+(\S*)>/i)
+        {
+            $loc=$1;
+            push @{$info->{vhost}{$vhost}{locations}},$loc;
+        }
+        elsif (/^\s*ProxyPass\s+(\S+)\s+([^=]+)(\s|$)/i)
+        {
+            my $src=$1;
+            my $dst=$2;
+            my $proxypass_name="proxypass";
+
+            if ($dst =~ /^([^:]*):\/\/([^:\/]*)(:(\d+))?(\/.*)?$/)
+            {
+                my ($proto, $ip, $port, $path ) = ($1, $2, $4 || 80, $5 || "");
+                if ($proto =~ /https/ and $port == 80) { $port = 443; }
+                my $aux=scalar gethostbyname ("$ip");
+                if (defined ($aux))
+                {
+                    $ip=inet_ntoa($aux);
+                    if ($check_connections != 0)
+                    {
+                        my $connection_worker = 
+							check_port($ip, $port, $vhost, 7);
+                        $dst = $dst."|$connection_worker";
+                    }
+                }
+                if ( $proto =~ /balance/)
+                {
+                    $proxypass_name = "proxypass_balance";
+                }
+				my $info_vhost = $info->{vhost}{$vhost};
+                $info_vhost->{$proxypass_name}{$src}{dstproto} = $proto;
+                $info_vhost->{$proxypass_name}{$src}{dstport} = $port;
+                $info_vhost->{$proxypass_name}{$src}{dstip} = $ip;
+                $info_vhost->{$proxypass_name}{$src}{dstpath} = $path;
+                if ($proto !~ /balance/)
+                {
+                    $info->{connections}{$ip}{$port}{proxypass_dst}{$dst} = 1;
+                    $info->{connections}{$ip}{$port}{proto}{$proto} = 1;
+                    $info->{connections}{$ip}{$port}{paths}{$path} = 1;
+                    $info->{connections}{$ip}{$port}{vhost}{$vhost} = 1;
+                }
+            }
+            $info->{vhost}{$vhost}{$proxypass_name}{$src}{dst} = $dst;
+        }
+        elsif (/^\s*ProxyPass\s+(\S+)/i)
+        {
+            my $dst=$1;
+            my $src=defined ($loc)?$loc:"PROXYPASS_WRONG_PARSED";
+            my $proxypass_name="proxypass";
+            if ($dst =~ /^([^:]*):\/\/([^:\/]*)(:(\d+))?(\/.*)?$/)
+            {
+                my ($proto, $ip, $port, $path ) = ($1, $2, $4 || 80, $5 || "");
+                if ($proto =~ /https/ and $port == 80) { $port = 443; }
+                my $aux=scalar gethostbyname ("$ip");
+                if (defined ($aux))
+                {
+                    $ip=inet_ntoa($aux);
+                    if ($check_connections != 0)
+                    {
+                        my $connection_worker=check_port($ip,$port,$vhost,7);
+                        $dst=$dst."|$connection_worker";
+                    }
+                }
+                if ( $proto =~ /balance/)
+                {
+                    $proxypass_name="proxypass_balance";
+                }
+				my $info_vhost = $info->{vhost}{$vhost};
+                $info_vhost->{$proxypass_name}{$src}{dstproto} = $proto;
+                $info_vhost->{$proxypass_name}{$src}{dstport} = $port;
+                $info_vhost->{$proxypass_name}{$src}{dstip} = $ip;
+                $info_vhost->{$proxypass_name}{$src}{dstpath} = $path;
+                if ($proto !~ /balance/)
+                {
+                    $info->{connections}{$ip}{$port}{proxypass_dst}{$dst} = 1;
+                    $info->{connections}{$ip}{$port}{proto}{$proto} = 1;
+                    $info->{connections}{$ip}{$port}{paths}{$path} = 1;
+                    $info->{connections}{$ip}{$port}{vhost}{$vhost} = 1;
+                }
+            }
+            $info->{vhost}{$vhost}{$proxypass_name}{$src}{dst} = $dst;
+        }
+        elsif (/^\s*WebLogicCluster\s+(\S+)\s*$/)
+        {
+            my $info_vhost = $info->{vhost}{$vhost};
+            push @{$info_vhost->{weblogicCluster}{$loc}{weblogic}},
+                split (",", $1);
+            foreach my $wlm (split (",", $1))
+            {
+                if ($wlm =~ /(\S+):(\d+)/)
+                {
+                    $info->{connections}{$1}{$2}{weblogicMember}{$loc}=1;
+                }
+            }
+        }
+# RewriteRule ^/path/$ /path/ [R,L]
+        elsif (/^\s*(RewriteRule|Redirect)\s+(\S+)\s+(\S+)(\s+\[([^]]*)\])?/i)
+        {
+            my  $src = $2;
+            my  $dst = $3;
+            my  $flags="";
+            $flags=$4 unless (not defined $4);
+            my $src_tmp = $src; $src_tmp =~ s/^[\^]|\$$//g; 
+            my $dst_tmp = $dst; $dst_tmp =~ s/\/$//;
+            if ($src_tmp ne $dst_tmp)
+            {
+                $info->{vhost}{$vhost}{rewriteRules}{"$src => $dst"} = $flags;
+            }
+        }
+        elsif (/^\s*JKWorkersFile\s+\"?([^"]*)\"?/i)
+        {
+            process_workers ( $info, $1 );
+        }
+# JkMount /path/* path
+        elsif (/^\s*JkMount\s+(\S+)\s+(\S*)/i)
+        {
+            my $path_tmp = $1;
+            my $work = $2;
+
+            $path_tmp =~ s/\/$//;
+            $path_tmp =~ s/\*\.\*$//;
+            $path_tmp =~ s/\*$//;
+            if (not defined  $info->{vhost}{$vhost}{jk}{$path_tmp."/"} and 
+                not defined $info->{vhost}{$vhost}{jk}{$path_tmp})
+            {
+                $info->{vhost}{$vhost}{jk}{$path_tmp} = $work;
+                $info->{workers}{$work}{paths}{$path_tmp}{$vhost} = 1;
+            }
+        }
+        elsif (/^\s*CustomLog\s+"?([^\s"]*)"?/i)
+        {
+            my $log = $1;
+            $log = $root_config."/$1" if ($1 !~ /^\//);
+            $info->{vhost}{$vhost}{logfile} = $log;
+            $info->{logfile}{$log}{vhost}{$vhost} = 1;
+        }
+        elsif (/^\s*ErrorLog\s+"?([^\s"]*)"?/i)
+        {
+            my $log = $1;
+            $log = $root_config."/$1" if ($1 !~ /^\//);
+            $info->{vhost}{$vhost}{errorlogfile} = $log;
+            $info->{errorlogfile}{$log}{vhost}{$vhost} = 1;
+        }
+    }
+}
+
+sub process_workers
+{
+    my ($info, $worker)=@_;
+
+    open my $WORK, "<", "$worker";
+    while (<$WORK>)
+    {
+        chomp;
+        if (/^\s*worker\.list=(.*)$/)
+        {
+            foreach my $w (split (/[, ]+/,$1))
+            {
+                $info->{workers}{$w}={};
+            }
+        }
+        elsif (/^\s*worker\.([^\.]*)\.([^=]*)\s*=\s*([^#]*)\s*$/)
+        {
+            my $value = $3;
+            my $property = $2;
+            my $name = $1;
+
+            $value =~ s/\s+//g;
+            $info->{workers}{$name}{$property} = $value;
+            if ($property =~ /balance_workers/)
+            {
+                foreach my $v (split /[, ]+/, $value)
+                {
+                    $info->{r_balance_workers}{$v}{$name} = 1;
+                }
+            }
+        }
+    }
+    foreach my $worker (sort keys %{$info->{workers}})
+    {
+        my $host = defined ($info->{workers}{$worker}{host})?
+                    $info->{workers}{$worker}{host} : "";
+        my $port = defined ($info->{workers}{$worker}{port})?
+                    $info->{workers}{$worker}{port} : "";
+        next if (defined ($info->{workers}{$worker}{balance_workers}));
+        $info->{connections}{$host}{$port}{workers}{$worker} = 1;
+        next if ($host eq "" or $port eq "");
+        my @lb = sort keys %{$info->{r_balance_workers}{$worker}};
+        if (@lb == 0) { @lb = ("standalone") ; }
+        foreach my $lb (@lb)
+        {
+            $info->{connections}{$host}{$port}{load_balancers}{$lb} = 1;
+        }
+    }
+}
+sub postprocess_workers
+{
+    my ($info)=@_;
+    foreach my $worker (sort keys %{$info->{workers}})
+    {
+        my $info_worker = $info->{workers}{$worker};
+        my $host = defined ($info->{workers}{$worker}{host})?
+                    $info->{workers}{$worker}{host} : "";
+        my $port = defined ($info->{workers}{$worker}{port})?
+                    $info->{workers}{$worker}{port} : "";
+        next if ($host eq "" || $port eq "" );
+        if (defined ($info->{workers}{$worker}{paths}))
+        {
+            foreach my $path (sort keys %{$info_worker->{paths}})
+            {
+                $info->{connections}{$host}{$port}{paths}{$path} = 1;
+                foreach my $vhost (sort keys %{$info_worker->{paths}{$path}})
+                {
+                    $info->{connections}{$host}{$port}{vhost}{$vhost} = 1;
+                }
+            }
+        }
+        my @lb = sort keys %{$info->{r_balance_workers}{$worker}};
+        foreach my $lb (@lb)
+        {
+            my $info_worker = $info->{workers}{$lb};
+            foreach my $path (sort keys %{$info_worker->{paths}})
+            {
+                $info->{connections}{$host}{$port}{paths}{$path} = 1;
+                foreach my $vhost (sort keys %{$info_worker->{paths}{$path}})
+                {
+                    $info->{connections}{$host}{$port}{vhost}{$vhost} = 1;
+                }
+            }
+        }
+    }
+}
+sub jk_to_info
+{
+    my ($info,$vhost,$path)=@_;
+
+    my $lb_worker=defined ($info{vhost}{$vhost}{jk}{$path})?
+            $info{vhost}{$vhost}{jk}{$path}:
+            "no_encontrado_lb_worker";
+    if (defined ($info{workers}{$lb_worker}{host}))
+    {
+        return "$info{workers}{$lb_worker}{host}:".
+            "$info{workers}{$lb_worker}{port}";
+    }
+    elsif ((defined($info{workers}{$lb_worker}{type})?
+            $info{workers}{$lb_worker}{type}:"") eq "status")
+    {
+        return "status";
+    }
+    my @workers=split (/[, ]+/,
+                    defined ($info{workers}{$lb_worker}{balance_workers})?
+                        $info{workers}{$lb_worker}{balance_workers} :
+                        "fail_$lb_worker");
+    my @workers_nodos;
+
+    foreach my $w (@workers)
+    {
+        my $host=defined ($info{workers}{$w}{host})?
+                $info{workers}{$w}{host} :
+                "host_not_defined_$w";
+        my $port=defined ($info{workers}{$w}{port})?
+                $info{workers}{$w}{port} :
+                "port_not_defined_$w";
+        my $connection_worker = 0;
+        my $worker = "$host:$port";
+        if ($host !~ /not_defined/ and $port !~ /not_defined/ 
+            and $check_connections != 0)
+        {
+            $connection_worker = check_port($host,$port,$vhost,7);
+            $worker = $worker."|$connection_worker";
+        }
+        push @workers_nodos, $worker;
+    }
+    return join (",",@workers_nodos);
+}
+sub print_jks
+{
+    my ($info,$vhost,$path) = @_;
+
+    my $info_jk = jk_to_info ($info,$vhost,$path);    
+    printf ("$vhost;$path;;$info_jk;;\n") if ($quietly == 0);
+}
+
+sub proxy_to_info
+{
+    my ($info, $vhost, $proxypass)=@_;
+    
+    my $dst = $info->{vhost}{$vhost}{proxypass}{$proxypass}{dst};
+    my @bals;
+
+    my $info_vhost = $info->{vhost}{$vhost};
+    if ($dst =~ /balancer:\/\/([^\/]*)\/?/i)
+    {
+        my $info_balance = $info_vhost->{balance}{$1};
+        my @bms = sort @{$info_balance->{balancerMembers}{name}};
+        foreach my $bm (@bms)
+        {
+            my $bal = $bm;
+            if ($bm =~ /http:\/\/([^\/]*)\//)
+            {
+                my $aux=scalar gethostbyname ("$1");
+                if (defined ($aux))
+                {
+                    my $ip = inet_ntoa($aux);
+                    $bal = $bal." [$ip]";
+                }
+            }
+            push @bals, $bal;
+        }
+    }
+    else
+    {
+        return $dst;
+    }
+    return join (",",@bals);
+}
+
+sub weblogic_to_info
+{
+    my ($info, $vhost, $location) = @_;
+    my $info_vhost = $info->{vhost}{$vhost};
+
+    my $weblogic = $info_vhost->{weblogicCluster}{$location}{weblogic};
+
+    return join ",", @$weblogic;
+
+# When we have dns ...
+#   return join ",", map { my ($ip,$port)=split ":";
+#               my $ip_aux=inet_aton($ip); 
+#               my $name=gethostbyaddr ($ip_aux,AF_INET);
+#               if (defined $name)
+#               {
+#                   $name.":".$port;
+#               }
+#               else
+#               {
+#                   $ip.":".$port;
+#               }
+#            }@$weblogic;
+}
+sub print_proxypasses
+{
+    my ($info, $vhost, $proxypass) = @_;
+    my $info_proxy = proxy_to_info ($info, $vhost, $proxypass);
+    printf ("$vhost;$proxypass;$info_proxy;;;\n") if ($quietly == 0);
+}
+sub print_weblogicCluster
+{
+    my ($info,$vhost, $location) = @_;
+    my $info_weblogic = weblogic_to_info ($info, $vhost, $location);
+    printf ("$vhost;$location;$info_weblogic;;;\n") if ($quietly == 0);
+}
+
+sub print_rewriterules
+{
+    my ($info,$vhost, $rule) = @_;
+    my $info_rule = $info->{vhost}{$vhost}{rewriteRules}{$rule};
+    #printf ("$vhost;;;;$rule [$info_rule];\n");
+    printf ("%s;;;;%s [%s];\n", $vhost, $rule, $info_rule) if ($quietly == 0);
+}
+sub print_virtualhost
+{
+    my ($vhost) = @_;
+    
+    printf ("$vhost;;;;;\n") if ($quietly == 0);    
+}
+
+sub print_locations
+{
+    my ($info,$vhost,$location) = @_;
+    my $info_vhost = $info->{vhost}{$vhost};
+
+    return 0  if (defined ($info_vhost->{proxypass}{$location}));
+    return 0  if (defined ($info_vhost->{rewriteRules}{$location}));
+    printf ("$vhost;$location;;;;\n") if ($quietly == 0);
+    return 1;
+}
+
+sub print_rootdirs 
+{
+    my ($info,$vhost,$root) = @_;
+    my $rootdirs = "";
+    $rootdirs = join (",",@{$info->{vhost}{$vhost}{root}{$root}});
+    printf ("$vhost;;;;;$rootdirs\n") if ($quietly == 0);
+}
+
+sub print_csv
+{
+    my ($info)=@_;
+    foreach my $vhost (keys (%{$info->{vhost}}))
+    {
+        my $info_vhost = $info->{vhost}{$vhost};  
+        my $n = 0;
+        foreach my $path (keys (%{$info_vhost->{jk}}))
+        {
+            print_jks ($info, $vhost, $path);
+            $n = $n+1;
+        }
+        foreach my $proxypass (keys (%{$info_vhost->{proxypass}}))
+        {
+            print_proxypasses ($info, $vhost, $proxypass);
+            $n = $n+1;
+        }
+        foreach my $location (keys (%{$info_vhost->{weblogicCluster}}))
+        {
+            print_weblogicCluster ($info,$vhost,$location);
+            $n = $n+1;
+        }
+        foreach my $rewriterule (keys (%{$info_vhost->{rewriteRules}}))
+        {
+            print_rewriterules ($info, $vhost, $rewriterule);
+            $n = $n+1;
+        }
+        foreach my $location (@{$info_vhost->{locations}})
+        {
+            if (print_locations ($info,$vhost,$location) != 0)
+            {
+                $n = $n+1;
+            }
+        }
+        foreach my $root (keys %{$info_vhost->{root}})
+        {
+            print_rootdirs ($info,$vhost,$root);
+            $n = $n+1;
+        }
+        if ($n == 0)
+        {
+            print_virtualhost ($vhost);
+        }
+    }
+}
+
+sub print_zabbix_lld_header 
+{
+    printf "{ \"data\": [\n";
+}
+sub print_zabbix_lld_tail()
+{
+    printf "] }";
+}
+sub print_zabbix_lld_body
+{
+    my @bal4print=@_;
+    {
+        local $" = ", \n";
+        print "@bal4print\n";
+    }
+}
+sub push_balance_entry
+{
+    my  ($bal4print, $info_balance, $bal, $vhost) = @_;
+    my $name = zabbix_lld_macro("BALANCERNAME","$bal");
+    my ($ip, $port, $proto, $balanceVhost, $path);
+
+    foreach my $balmember (sort keys %{$info_balance->{balancerMembers}})
+    {
+        my $aux = $info_balance->{balancerMembers}{$balmember};
+        $proto = zabbix_lld_macro("BALANCERMEMBER_PROTO", "$aux->{proto}");
+        $ip = zabbix_lld_macro("BALANCERMEMBER_IP", "$aux->{ip}");
+        $port = zabbix_lld_macro("BALANCERMEMBER_PORT", "$aux->{port}");
+        $path = zabbix_lld_macro("BALANCERMEMBER_PATH", "$aux->{path}");
+        $balanceVhost = zabbix_lld_macro("BALANCER_VHOST","$vhost");
+        push @{$bal4print}, "{$name, $balanceVhost, $proto, $ip, $port,$path}";
+    }
+}
+sub print_zabbix_balancers
+{
+    my ($info)=@_;
+    
+    print_zabbix_lld_header();
+    my @bal4print;
+    foreach my $vhost (sort keys %{$info->{vhost}})
+    {
+        my $info_vhost=$info->{vhost}{$vhost};
+        foreach my $bal (sort keys %{$info_vhost->{balance}})
+        {
+            my $info_balance=$info_vhost->{balance}{$bal};
+            push_balance_entry(\@bal4print, $info_balance, $bal, $vhost);
+        }
+    }
+    print_zabbix_lld_body(@bal4print);
+    print_zabbix_lld_tail();
+}
+
+sub push_directory_entry
+{
+    my  ($bal4print, $info, $d, $vhost, $unique)=@_;
+    my $directory = zabbix_lld_macro("DIRECTORY", "$vhost#$d");
+    my $dirname = zabbix_lld_macro("DIRECTORYNAME", "$d");
+    my $directoryVhost = zabbix_lld_macro("DIRECTORYVHOST", "$vhost");
+    my @vhosts = sort keys %{$info->{directory}{$d}{vhost}};
+    my $directoryVhosts = join ("\\n", @vhosts);
+    $directoryVhosts = zabbix_lld_macro("DIRECTORYVHOST", "$directoryVhosts");
+    if ($unique == 0)
+    {
+        push @{$bal4print}, "{$directory, $dirname, $directoryVhost}";
+    }
+    else
+    {
+        push @{$bal4print}, "{$dirname, $directoryVhosts}";
+    }
+}
+sub print_zabbix_directories
+{
+    my ($info,$unique) = @_;
+    
+    print_zabbix_lld_header();
+    my @bal4print;
+    my %directories;
+    foreach my $vhost (sort keys %{$info->{vhost}})
+    {
+        my $info_vhost = $info->{vhost}{$vhost};
+        foreach my $d (sort keys %{$info_vhost->{directory}},
+                sort keys %{$info_vhost->{root}})
+        {
+            next if defined ($directories{$d} and $unique == 1);
+            push_directory_entry(\@bal4print, $info, $d, $vhost, $unique);
+            $directories{$d} = 1;
+        }
+    }
+    print_zabbix_lld_body(@bal4print);
+    print_zabbix_lld_tail();
+}
+sub push_proxypass_entry
+{
+    my ($bal4print, $aux, $vhost, $p) = @_;
+    my $proxypassVhost = zabbix_lld_macro("PROXYPASS_VHOST", "$vhost");
+    my $source = zabbix_lld_macro("PROXYPASS_SRC", "$p");
+    my $dstip = zabbix_lld_macro("PROXYPASS_DESTIP", "$aux->{dstip}");
+    my $dstport = zabbix_lld_macro("PROXYPASS_DESTPORT", "$aux->{dstport}");
+    my $dstpath = zabbix_lld_macro("PROXYPASS_DESTPATH", "$aux->{dstpath}");
+    push @{$bal4print},
+        "{$proxypassVhost, $source, $dstip, $dstport, $dstpath}";
+}
+sub print_zabbix_proxypasses
+{
+    my ($info, $unique)=@_;
+    
+    print_zabbix_lld_header();
+    my @bal4print;
+    my %unique;
+    foreach my $vhost (sort keys %{$info->{vhost}})
+    {
+        my $info_proxypass = $info->{vhost}{$vhost}{proxypass};
+        foreach my $p (sort keys %{$info_proxypass})
+        {
+            next if ($info_proxypass->{$p}{dst} eq "!");
+            my $aux=$info_proxypass->{$p};
+            if ($unique == 0)
+            {
+                push_proxypass_entry(\@bal4print, $aux,
+                            $vhost, $p);
+            }
+            elsif ($unique == 1)
+            {
+                $unique{"$aux->{dstip}-$aux->{dstport}"}
+                    {dstpath}{$aux->{dstpath}}=1;
+                $unique{"$aux->{dstip}-$aux->{dstport}"}
+                    {vhost}{$vhost}=1;
+            }
+        }
+    }
+    if ($unique == 1)
+    {
+        foreach my $pp (sort keys %unique)
+        {
+            my @aux = split ("-",$pp);
+            my $dstip = zabbix_lld_macro("PROXYPASS_DESTIP_UNIQ", $aux[0]);
+            my $dstport = zabbix_lld_macro("PROXYPASS_DESTPORT_UNIQ", $aux[1]);
+            my $dstpaths = join ("\\n",
+                            sort keys (%{$unique{$pp}{"dstpath"}}));
+            my $paths = zabbix_lld_macro("PROXYPASS_DESTPATH_UNIQ", $dstpaths);
+            my $vhosts = join ("\\n" ,
+                    sort keys (%{$unique{$pp}{"vhost"}}));
+            $vhosts = zabbix_lld_macro("PROXYPASS_VHOSTS_UNIQ", $vhosts);
+            push @bal4print, "{$dstip, $dstport, $paths, $vhosts}";
+        }
+    }
+    print_zabbix_lld_body(@bal4print);
+    print_zabbix_lld_tail();
+}
+
+sub print_zabbix_logfiles
+{
+    my ($info, $type) = @_;
+    
+    print_zabbix_lld_header();
+    my @bal4print;
+    foreach my $logfile (sort keys %{$info->{$type}})
+    {
+        my $vhosts = join ("\\n",
+                        sort keys %{$info->{$type}{$logfile}{vhost}});
+        $vhosts = zabbix_lld_macro(uc("$type")."_VHOSTS", "$vhosts");
+        my $log = zabbix_lld_macro(uc("$type"), "$logfile");
+        push @bal4print, "{$log,$vhosts}";
+    }
+    print_zabbix_lld_body(@bal4print);
+    print_zabbix_lld_tail();
+}
+
+sub zabbix_lld_macro
+{
+    my ($macro,$value) = @_;
+    return "\"{#$macro}\": \"$value\"";
+}
+sub print_zabbix_weblogics
+{
+# $info->{vhost}{$vhost}{weblogicCluster}{$loc}{weblogic}}
+    my ($info) = @_;
+    
+    print_zabbix_lld_header();
+    my @bal4print = ();
+    foreach my $vhost (sort keys %{$info->{vhost}})
+    {
+        my $info_vhost = $info->{vhost}{$vhost};
+        if ( defined $info_vhost->{weblogicCluster} )
+        {
+            my $vh = zabbix_lld_macro("WEBLOGIC_VHOST", "$vhost");
+            foreach my $loc (sort keys %{$info_vhost->{weblogicCluster}})
+            {
+                my $loc2 = zabbix_lld_macro("WEBLOGIC_LOC", "$loc");
+                my $info_wlcluster = $info_vhost->{weblogicCluster}{$loc};
+                foreach my $node (@{$info_wlcluster->{weblogic}})
+                {
+                    my $ip;
+                    my $port;
+                    if ($node =~ /^([^:]*):([^:]*)$/)
+                    {
+                        $ip = zabbix_lld_macro("WEBLOGIC_NODEIP", $1);
+                        $port = zabbix_lld_macro("WEBLOGIC_NODEPORT", $2);
+                    }
+                    push @bal4print, "{ $vh, $loc2, $ip, $port }";
+                }
+            }
+        }
+    }
+    print_zabbix_lld_body(@bal4print);
+    print_zabbix_lld_tail();
+}
+
+sub print_zabbix_workers
+{
+    my ($info,$discard) = @_; 
+    my %workers_dup;
+    
+    print_zabbix_lld_header();
+    my @bal4print = ();
+    foreach my $worker (sort keys (%{$info->{workers}}))
+    {
+        next if ($worker eq "default" || $worker eq "jkstatus");
+        next if (defined $info->{workers}{$worker}{balance_workers});
+        my $host = defined($info->{workers}{$worker}{host})?
+                    $info->{workers}{$worker}{host} : "";
+        my $port = defined($info->{workers}{$worker}{port})?
+                    $info->{workers}{$worker}{port} : "";
+        my $name = $worker;
+        if ($host =~ /./ && $port =~ /./)
+        {
+            my $info_connection = $info->{connections}{$host}{$port};
+            foreach my $w (sort keys %{$info_connection->{workers}})
+            {
+                next if ($w =~ /^$worker$/);
+                $workers_dup{$w}=1;
+                $name.="\\n$w";
+            }
+        }
+        next if defined $workers_dup{$worker};
+        my %paths = ();
+        foreach my $lb (sort keys %{$info->{r_balance_workers}{$worker}})
+        {
+            my $info_worker = $info->{workers}{$lb};
+            foreach my $path (sort keys %{$info_worker->{paths}})
+            {
+                foreach my $vpath (sort keys %{$info_worker->{paths}{$path}})
+                {
+                    $paths{$vpath.$path} = 1;
+                }
+            }
+        }
+        my $info_worker = $info->{workers}{$worker};
+        foreach my $path (sort keys %{$info_worker->{paths}})
+        {
+            foreach my $vpath (sort keys %{$info_worker->{paths}{$path}})
+            {
+                $paths{$vpath.$path} = 1;
+            }
+        }
+        my $lb=join (",", sort keys %{$info->{r_balance_workers}{$worker}});
+        if ($lb eq "") { $lb = "standalone" ; }
+        $lb = zabbix_lld_macro("WORKERS_LOADBALANCER_MEMBER", $lb);
+        my $paths2_raw = join ("\\n", sort keys %paths);
+        my $paths2 = zabbix_lld_macro("WORKERS_PATHS", $paths2_raw);
+        $name = zabbix_lld_macro("WORKERS_NAME", "$name");
+        my @params=();
+        foreach my $item ("host", "port")
+        {
+            if ($paths2_raw =~ /./
+                      && defined $info->{workers}{$worker}{$item}
+                      && $discard == 0)
+            {
+                push @params, ($name, $lb, $paths2) if (@params == 0);
+                push @params, zabbix_lld_macro("WORKERS_".uc($item),
+                                            "$info_worker->{$item}");
+            }
+            elsif (((!(defined $info->{workers}{$worker}{$item})) 
+                        || $paths2_raw =~ /^$/) && $discard == 1)
+            {
+                push @params, $name, $lb, $paths2 if (@params == 0);
+                push @params, zabbix_lld_macro("WORKERS_".uc($item),"");
+            }
+        }
+        push @bal4print, "{ ".( join ",", @params)." }" if (@params > 0);   
+    }
+    print_zabbix_lld_body(@bal4print);
+    print_zabbix_lld_tail();
+}
+
+sub print_zabbix_connections
+{
+    my ($info, $wrong)=@_;
+    my $connections=$info->{connections};
+    my %properties;
+    my @bal4print = ();
+
+    print_zabbix_lld_header();
+
+    foreach my $ip (sort keys %{$connections})
+    {
+        foreach my $port (sort keys %{$connections->{$ip}})
+        {
+            foreach my $prop (sort keys %{$connections->{$ip}{$port}})
+            {
+                $properties{$prop}=1;
+            }
+        }
+    }
+    foreach my $ip (sort keys %{$connections})
+    {
+        foreach my $port (sort keys %{$connections->{$ip}})
+        {
+            my @props = ();
+            my $connection = $connections->{$ip}{$port};
+            if ( $wrong == 0 && $ip ne "" && $port ne "")
+            {
+                push @props, zabbix_lld_macro("IP", $ip);   
+                push @props, zabbix_lld_macro("PORT", $port);
+            }
+            elsif ( $wrong == 1 && ($ip eq "" || $port eq ""))
+            {
+                push @props, zabbix_lld_macro("IP", $ip);   
+                push @props, zabbix_lld_macro("PORT", $port);
+            }
+#            foreach my $prop (sort keys %{$connections->{$ip}{$port}})
+            foreach my $prop (sort keys %{properties})
+            {
+            	my $value = "";
+                if (defined ($connection->{$prop}))
+                {
+                    $value = join("\\n",
+                                        sort keys %{$connection->{$prop}});
+                }
+                if ($wrong == 0)
+                {
+                    push @props, zabbix_lld_macro (uc($prop), $value)
+                        if ( $ip ne "" && $port ne "");
+                }
+                else
+                {
+                    $value =~ s/\s*jkstatus\s*//,;
+                    push @props, zabbix_lld_macro (uc($prop), $value) 
+                        if ( $ip eq "" || $port eq "");
+                }
+            }
+            push @bal4print, "{".join (",", @props)."}" if (@props > 0);
+        }
+    }
+    print_zabbix_lld_body(@bal4print);
+    print_zabbix_lld_tail();
+}
+
+my @files=defined ($ARGV[0])?
+    ($ARGV[0]) :
+    `ps -C httpd -o cmd= | grep -v defun |
+         sort -u | sed 's,/bin.*,/conf/httpd.conf,'`;
+my $root_config;
+chomp @files;
+for my $file (@files)
+{
+    if ($file =~ /usr/ and not defined ($ARGV[0]))
+    {
+        $file=`find /etc/ -name "httpd.conf" | grep -v sysconfig`;
+        chomp $file;
+    }
+    if (-e "$file")
+    {
+        chdir (dirname (dirname($file)));
+        $root_config=getcwd();
+        process_config (\%info,$file,$root_config, $vhost);
+        postprocess_workers (\%info);
+    }
+    else
+    {
+        die "I cant open $file";
+    }
+}
+foreach my $vhost (keys %{${info{vhost}}})
+{
+    my $info_vhost = $info{vhost}{$vhost};
+    foreach my $key (qw(jk proxypass rewriteRules weblogicCluster root))
+    {
+        $info_vhost->{$key} = {}
+            if (not defined $info_vhost->{$key});
+    }
+    foreach my $key (qw(locations))
+    {
+        $info_vhost->{$key} = ()
+            if (not defined $info_vhost->{$key});
+    }
+}
+foreach my $worker (keys %{$info{workers}})
+{
+    my $info_worker = $info{workers}{$worker};
+    foreach my $key (qw(paths))
+    {
+        $info{workers}{$worker}{paths}={}
+            if (not defined $info_worker->{paths});
+    }
+}
+# print Dumper (\%info); exit (0);
+print_csv (\%info) if ($csv != 0);
+print_zabbix_balancers (\%info) if $zabbix_balancers;
+print_zabbix_directories (\%info,0) if $zabbix_directories;
+print_zabbix_directories (\%info,1) if $zabbix_directories_uniq;
+print_zabbix_proxypasses (\%info,0) if $zabbix_proxypasses;
+print_zabbix_proxypasses (\%info,1) if $zabbix_proxypasses_uniq;
+print_zabbix_logfiles (\%info,"logfile") if $zabbix_logfiles;
+print_zabbix_logfiles (\%info,"errorlogfile") if $zabbix_errorlogfiles;
+print_zabbix_weblogics (\%info) if $zabbix_weblogics;
+print_zabbix_workers (\%info,0) if $zabbix_workers;
+print_zabbix_workers (\%info,1) if $zabbix_workers_discard;
+print_zabbix_connections (\%info,0) if $zabbix_connections;
+print_zabbix_connections (\%info,1) if $zabbix_wrong_connections;
+
+
+# vim: ts=4 sts=4 sw=4 expandtab colorcolumn=80 
