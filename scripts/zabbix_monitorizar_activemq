@@ -1,0 +1,5 @@
+python /opt/scripts/zabbix_monitorizar_activo_pasivo \
+	--item-key 'jmx["org.apache.activemq:type=Broker,brokerName={$BROKER}",Slave]' \
+	--value false \
+	--template Plantilla_ActiveMQ_MasterSlave \
+	--pre >> /var/log/zabbix/activemq.log 2>&1 
