@@ -1,0 +1,125 @@
+#!/usr/bin/python
+# -- encoding: utf8 --
+
+
+import netsnmp
+import pprint
+import jinja2
+import argparse
+import re
+import sys
+import ConfigParser, os
+from zabbix_api import ZabbixAPI
+
+def login_zabbix(args):
+	config_files=['/opt/zabbix-agent/etc/zabbix_api.conf', 
+			'/etc/zabbix/zabbix_api.conf', os.path.expanduser('~/.zabbix_api.conf')]
+	if args.config:
+		config_files=config_files+[args.config[0]]
+	config=ConfigParser.ConfigParser()
+	config.read(config_files)
+
+	zabbix_user = config.get('zabbixapi','user')
+	zabbix_password = config.get('zabbixapi','password')
+	zabbix_server = config.get('zabbixapi','server')
+
+	zapi = ZabbixAPI(server="https://"+zabbix_server+"/zabbix/", \
+	            validate_certs = False, timeout = 120)
+	zapi.login(zabbix_user, zabbix_password) 
+
+	return zapi
+
+parser = argparse.ArgumentParser(
+        description='Carga la plantilla de hnascluster con los volúmenes, con una regla de descubrimiento por cada volumen')
+parser.add_argument('--config', action="store", nargs=1,
+                   help='Especifica el fichero de configuración a utilizar')
+
+
+args = parser.parse_args()
+
+zapi = login_zabbix(args)
+
+snmpsession=netsnmp.Session(DestHost="192.168.3.85", Community="VSPGx00", Version=2)
+
+# snmpvar=netsnmp.Varbind("BLUEARC-SERVER-MIB::fsLabel")
+# snmpvarlist=netsnmp.VarList(snmpvar)
+# fs=snmpsession.walk(snmpvarlist)
+# snmpvar=netsnmp.Varbind("BLUEARC-SERVER-MIB::fsStatsFsLabel")
+# snmpvarlist=netsnmp.VarList(snmpvar)
+# fsl=netsnmp.walk(snmpvarlist)
+
+fsLabel={}
+fsStatLabel={}
+oid={}
+has_virtualvolume_quota={}
+
+snmpvar=netsnmp.Varbind("BLUEARC-TITAN-MIB::virtualVolumeTitanName")
+snmpvarlist=netsnmp.VarList(snmpvar)
+volumes=snmpsession.walk(snmpvarlist)
+
+snmpvar=netsnmp.Varbind("BLUEARC-TITAN-MIB::virtualVolumeTitanSpanId")
+snmpvarlist=netsnmp.VarList(snmpvar)
+owners=snmpsession.walk(snmpvarlist)
+snmpvartt=""
+snmpvarttlist=""
+for i,v in enumerate(volumes):
+	fsLabel[v]=snmpvarlist[i].iid.split(".")[0]
+	fsStatLabel[v]=owners[i]
+	oid[v]=snmpvarlist[i].iid.partition(".")[2]
+	snmpvartt=netsnmp.Varbind("BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasTargetType."+owners[i]+"."+oid[v]+".0")
+	snmpvarttlist=netsnmp.VarList(snmpvartt)
+	has_virtualvolume_quota[v]=snmpsession.get(snmpvarttlist)[0]=='3'
+
+	
+
+
+# pprint.pprint(fsLabel)
+# pprint.pprint(fsStatLabel)
+# pprint.pprint(oid)
+# pprint.pprint(has_virtualvolume_quota)
+
+templateLoader = jinja2.FileSystemLoader( searchpath="./")
+templateEnv = jinja2.Environment( loader=templateLoader )
+template=templateEnv.get_template("Plantilla_plantilla_hnas_quotas.xml")
+outputText = template.render(fsLabel=fsLabel, oid=oid, fsStatLabel=fsStatLabel,
+		 volumes=volumes, has_virtualvolume_quota=has_virtualvolume_quota)
+# print outputText.encode('utf-8')
+serializedOutputText=''.join(outputText.splitlines()).encode('utf-8')
+serializedOutputText=re.sub(">\s+<","><",serializedOutputText)
+# print outputText.encode('utf-8')
+res=zapi.configuration.import_({
+	"source": serializedOutputText,
+	"format": "xml",
+	"rules": {
+			"applications":	{
+				"createMissing": True,
+				"updateExisting": True,
+				"deleteMissing": False 
+			},
+			"discoveryRules": {
+				"createMissing": True,
+				"updateExisting": True,
+				"deleteMissing": False
+			},
+			"templates": {
+				"createMissing": True,
+				"updateExisting": True
+			},
+			"items": {
+				"createMissing": True,
+				"updateExisting": True,
+				"deleteMissing": True
+			},
+			"triggers": {
+				"createMissing": True,
+				"updateExisting": True,
+				"deleteMissing": True
+			},
+			"valueMaps": {
+				"createMissing": True,
+				"updateExisting": True,
+			}
+
+		}
+	})
+
