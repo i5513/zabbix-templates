@@ -1,0 +1,17 @@
+if [ -z "$1" ]
+then
+	echo "ZBX_UNSUPPORTED: falta puerto"
+	exit 1
+fi
+
+topics="$(curl -s -u user:password  -x ''  localhost:${1}/admin/xml/topics.jsp)"
+
+if [ $? -ne 0 ]
+then
+	echo "{ \"data\" : [ ] }"
+	exit 0
+fi
+echo "$topics" |
+xmlstarlet sel -t -v '//topic/@name' |
+awk 'BEGIN { print "{\"data\": ["; }  {print "{\"{#TOPIC}\": \""$0"\"},";}'  |
+sed '$s/,$/]}/' 
