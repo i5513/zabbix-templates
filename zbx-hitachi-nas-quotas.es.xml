@@ -16,8 +16,8 @@
                 <group>
 			<name>Templates</name>
                 </group>
-            </groups>
-	    	    
+	</groups>
+	
             <applications>
                 <application>
                     <name>Path</name>
@@ -30,16 +30,17 @@
                 </application>
             </applications>
             <items>
+{% for vol in volumes %}
                 <item>
-                    <name>Path de Almeria</name>
+                    <name>Path de {{vol}}</name>
                     <type>4</type>
-                    <snmp_community>VSPGx00</snmp_community>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
                     <multiplier>0</multiplier>
-                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanPath.2426428423.65.108.109.101.114.105.97</snmp_oid>
-                    <key>VolumeTitanPath[Almeria]</key>
+                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanPath.{{fsLabel[vol]}}.{{oid[vol]}}</snmp_oid>
+                    <key>VolumeTitanPath[{{vol}}]</key>
                     <delay>86400</delay>
                     <history>7</history>
-                    <trends>0</trends>
+                    <trends>365</trends>
                     <status>0</status>
                     <value_type>4</value_type>
                     <allowed_hosts/>
@@ -74,17 +75,17 @@
                     <logtimefmt/>
                 </item>
                 <item>
-                    <name>Número de quotas de Almeria</name>
+                    <name>Número de quotas de {{vol}}</name>
                     <type>4</type>
-                    <snmp_community>VSPGx00</snmp_community>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
                     <multiplier>0</multiplier>
-                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotaNumber.2426428423.65.108.109.101.114.105.97</snmp_oid>
-                    <key>VolumeTitanQuotaNumber[Almeria]</key>
-                    <delay>30</delay>
+                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotaNumber.{{fsLabel[vol]}}.{{oid[vol]}}</snmp_oid>
+                    <key>VolumeTitanQuotaNumber[{{vol}}]</key>
+                    <delay>3600</delay>
                     <history>7</history>
-                    <trends>0</trends>
+                    <trends>365</trends>
                     <status>0</status>
-                    <value_type>4</value_type>
+                    <value_type>3</value_type>
                     <allowed_hosts/>
                     <units/>
                     <delta>0</delta>
@@ -116,17 +117,22 @@
                     <valuemap/>
                     <logtimefmt/>
                 </item>
-            </items>
-            <discovery_rules>
-                <discovery_rule>
-                    <name>Targets de Almeria</name>
+{% if has_virtualvolume_quota[vol] %}
+                <item>
+                    <name>Quotas {{vol}} - Límite de número de ficheros crítico</name>
                     <type>4</type>
                     <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
-                    <snmp_oid>discovery[{#TARGET},BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasTarget.1024.65.108.109.101.114.105.97]</snmp_oid>
-                    <key>virtualVolumeTitanQuotasTarget[{#USER}]</key>
-                    <delay>3600</delay>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasFileCountCritical.{{fsStatLabel[vol]}}.{{oid[vol]}}.0</snmp_oid>
+                    <key>virtualVolumeTitanQuotasFileCountCritical[{{vol}}]</key>
+                    <delay>60</delay>
+                    <history>7</history>
+                    <trends>365</trends>
                     <status>0</status>
+                    <value_type>3</value_type>
                     <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
                     <snmpv3_contextname/>
                     <snmpv3_securityname/>
                     <snmpv3_securitylevel>0</snmpv3_securitylevel>
@@ -134,303 +140,266 @@
                     <snmpv3_authpassphrase/>
                     <snmpv3_privprotocol>0</snmpv3_privprotocol>
                     <snmpv3_privpassphrase/>
+                    <formula>1</formula>
                     <delay_flex/>
                     <params/>
                     <ipmi_sensor/>
+                    <data_type>0</data_type>
                     <authtype>0</authtype>
                     <username/>
                     <password/>
                     <publickey/>
                     <privatekey/>
                     <port/>
-                    <filter>
-                        <evaltype>0</evaltype>
-                        <formula/>
-                        <conditions/>
-                    </filter>
-                    <lifetime>1</lifetime>
                     <description/>
-                    <item_prototypes>
-                        <item_prototype>
-                            <name>Quotas {#TARGET} - Límite de número de ficheros crítico</name>
-                            <type>4</type>
-                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
-                            <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasFileCountCritical.1024.65.108.109.101.114.105.97.83.65.69.92.109.97.{#SNMPINDEX}</snmp_oid>
-                            <key>virtualVolumeTitanQuotasFileCountCritical</key>
-                            <delay>86400</delay>
-                            <history>7</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units/>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>Quotas - Estadísticas</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                            <application_prototypes/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Quotas {#TARGET} - Número de ficheros</name>
-                            <type>4</type>
-                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
-                            <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasUsage.1024.65.108.109.101.114.105.97.{#SNMPINDEX}</snmp_oid>
-                            <key>virtualVolumeTitanQuotasFileCount[{#TARGET}]</key>
-                            <delay>3600</delay>
-                            <history>7</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units>B</units>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>Quotas - Estadísticas</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                            <application_prototypes/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Quotas {#TARGET} - Tipo de target</name>
-                            <type>4</type>
-                            <snmp_community>VSPGx00</snmp_community>
-                            <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasTargetType.1024.65.108.109.101.114.105.97.{#SNMPINDEX}</snmp_oid>
-                            <key>virtualVolumeTitanQuotasTargetType[{#TARGET}]</key>
-                            <delay>30</delay>
-                            <history>90</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units/>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>Quotas</name>
-                                </application>
-                            </applications>
-                            <valuemap>
-                                <name>BlueArc - virtualVolumeTitanQuotasTargetType</name>
-                            </valuemap>
-                            <logtimefmt/>
-                            <application_prototypes/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Quotas {#TARGET} - Tipo de quota</name>
-                            <type>4</type>
-                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
-                            <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasType.1024.65.108.109.101.114.105.97.{#SNMPINDEX}</snmp_oid>
-                            <key>virtualVolumeTitanQuotasType[{#TARGET}]</key>
-                            <delay>86400</delay>
-                            <history>7</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units/>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>Quotas</name>
-                                </application>
-                            </applications>
-                            <valuemap>
-                                <name>BlueArc - virtualVolumeTitanQuotasType</name>
-                            </valuemap>
-                            <logtimefmt/>
-                            <application_prototypes/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Quotas {#TARGET} - Límite crítico de uso</name>
-                            <type>4</type>
-                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
-                            <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasUsageCritical.1024.65.108.109.101.114.105.97.83.65.69.92.109.97.{#SNMPINDEX}</snmp_oid>
-                            <key>virtualVolumeTitanQuotasUsageCritical</key>
-                            <delay>86400</delay>
-                            <history>7</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units/>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>Quotas - Estadísticas</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                            <application_prototypes/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Quotas {#TARGET} - Uso</name>
-                            <type>4</type>
-                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
-                            <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasUsage.1024.65.108.109.101.114.105.97.{#SNMPINDEX}</snmp_oid>
-                            <key>virtualVolumeTitanQuotasUsage[{#TARGET}]</key>
-                            <delay>3600</delay>
-                            <history>7</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units>B</units>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>Quotas - Estadísticas</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                            <application_prototypes/>
-                        </item_prototype>
-                    </item_prototypes>
-                    <trigger_prototypes/>
-                    <graph_prototypes/>
-                    <host_prototypes/>
-                </discovery_rule>
-            </discovery_rules>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Quotas - Estadísticas</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Quotas {{vol}} - Número de ficheros usados</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasFileCount.{{fsStatLabel[vol]}}.{{oid[vol]}}.0</snmp_oid>
+                    <key>virtualVolumeTitanQuotasFileCount[{{vol}}]</key>
+                    <delay>60</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Quotas - Estadísticas</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Quotas {{vol}} - Límite crítico de uso</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasUsageCritical.{{fsStatLabel[vol]}}.{{oid[vol]}}.0</snmp_oid>
+                    <key>virtualVolumeTitanQuotasUsageCritical[{{vol}}]</key>
+                    <delay>60</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Quotas - Estadísticas</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Quotas {{vol}} - Uso</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanQuotasUsage.{{fsStatLabel[vol]}}.{{oid[vol]}}.0</snmp_oid>
+                    <key>virtualVolumeTitanQuotasUsage[{{vol}}]</key>
+                    <delay>60</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Quotas - Estadísticas</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+{% else %}
+                <item>
+                    <name>Quotas {{vol}} - Sin quota</name>
+                    <type>2</type>
+                    <snmp_community></snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid></snmp_oid>
+                    <key>virtualVolumeTitanQuotasVirtualVolumeOff[{{vol}}]</key>
+                    <delay>3600</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Quotas - Estadísticas</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item> 
+{% endif %}
+{% endfor %}
+            </items>
+            <discovery_rules/>
             <httptests/>
             <macros/>
             <templates/>
             <screens/>
         </template>
     </templates>
+    <triggers>
+{% for vol in volumes %}
+{% if has_virtualvolume_quota[vol] %}
+        <trigger>
+            <expression>{Plantilla_Hitachi_NAS_Volume_Quotas_Cluster:virtualVolumeTitanQuotasUsageCritical[{{vol}}].last()}-{Plantilla_Hitachi_NAS_Volume_Quotas_Cluster:virtualVolumeTitanQuotasUsage[{{vol}}].last()}&lt;10</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>{HOSTNAME} MF - Espacio en volumen {{vol}}</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>3</priority>
+            <description>Quedan menos de 10MB de la quota (o ya se ha llegado a la misma)</description>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+        </trigger>
+        <trigger>
+            <expression>{Plantilla_Hitachi_NAS_Volume_Quotas_Cluster:virtualVolumeTitanQuotasFileCountCritical[{{vol}}].last()}&lt;&gt;0 and {Plantilla_Hitachi_NAS_Volume_Quotas_Cluster:virtualVolumeTitanQuotasFileCountCritical[{{vol}}].last()}-{Plantilla_Hitachi_NAS_Volume_Quotas_Cluster:virtualVolumeTitanQuotasFileCount[{{vol}}].last()}&lt;10</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>{HOSTNAME} MF - Número de ficheros en volumen {{vol}}</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>3</priority>
+            <description>Quedan menos de 10 ficheros para que alcance el límite de ficheros (o ya se ha pasado)</description>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+          </trigger>
+{% else %}
+        <trigger>
+            <expression>{Plantilla_Hitachi_NAS_Volume_Quotas_Cluster:virtualVolumeTitanQuotasVirtualVolumeOff[{{vol}}].nodata(300)}=1</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>{HOSTNAME} MF - Volumen {{vol}} sin quota por volumen</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>3</priority>
+            <description>Quedan menos de 10 ficheros para que alcance el límite de ficheros (o ya se ha pasado)</description>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+          </trigger>
+               
+{% endif %}
+{% endfor %}
+    </triggers>
     <value_maps>
         <value_map>
             <name>BlueArc - virtualVolumeTitanQuotasTargetType</name>
@@ -468,4 +437,3 @@
         </value_map>
     </value_maps>
 </zabbix_export>
-	    

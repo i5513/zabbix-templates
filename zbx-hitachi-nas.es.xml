@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.2</version>
-    <date>2017-06-06T12:34:02Z</date>
+    <date>2017-12-19T16:53:44Z</date>
     <groups>
         <group>
 		<name>Templates</name>
@@ -17,13 +17,16 @@
 			<name>Templates</name>
                 </group>
             </groups>
-	    
+
             <applications>
                 <application>
                     <name>Batería</name>
                 </application>
                 <application>
                     <name>Chassis de discos</name>
+                </application>
+                <application>
+                    <name>Cluster - Cifs Shares</name>
                 </application>
                 <application>
                     <name>Cluster - Nodos Físicos</name>
@@ -39,6 +42,24 @@
                 </application>
                 <application>
                     <name>Fuentes de Alimentación</name>
+                </application>
+                <application>
+                    <name>Interfaces de Red</name>
+                </application>
+                <application>
+                    <name>Métrica Física - Carga del sistema</name>
+                </application>
+                <application>
+                    <name>Métrica Física - Procesador (CPU)</name>
+                </application>
+                <application>
+                    <name>Métrica física - Red</name>
+                </application>
+                <application>
+                    <name>NFS SHare</name>
+                </application>
+                <application>
+                    <name>NMDP</name>
                 </application>
                 <application>
                     <name>Rendimiento</name>
@@ -321,6 +342,268 @@ Pero no creo que merezca la pena</description>
                     <valuemap/>
                     <logtimefmt/>
                 </item>
+                <item>
+                    <name>Carga del sistema debido a los clientes</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-SERVER-MIB::fileSystemLoadClient.0</snmp_oid>
+                    <key>fileSystemLoadClient</key>
+                    <delay>300</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Métrica Física - Carga del sistema</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Carga del sistema</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-SERVER-MIB::fileSystemLoadSystem.0</snmp_oid>
+                    <key>fileSystemLoadSystem</key>
+                    <delay>300</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Métrica Física - Carga del sistema</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Paquetes con fallo en las ips</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>IP-MIB::ipInAddrErrors.0</snmp_oid>
+                    <key>ipInAddrErrors</key>
+                    <delay>300</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Interfaces de Red</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Estado NDMP</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-SERVER-MIB::ndmpCurrentStatus.0</snmp_oid>
+                    <key>ndmpCurrentStatus</key>
+                    <delay>30</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>NMDP</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Conexiones TCP establecidas</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>TCP-MIB::tcpCurrEstab.0</snmp_oid>
+                    <key>tcpCurrEstab</key>
+                    <delay>300</delay>
+                    <history>7</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Interfaces de Red</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Máximas conexiones abiertas</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <multiplier>0</multiplier>
+                    <snmp_oid>BLUEARC-SERVER-MIB::tcpMaxOpenConns.0</snmp_oid>
+                    <key>tcpMaxOpenConns</key>
+                    <delay>30</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description>Podríamos añadir:&#13;
+BLUEARC-SERVER-MIB::tcpOpenConns&#13;
+BLUEARC-SERVER-MIB::tcpTotalOpenConns.0&#13;
+BLUEARC-SERVER-MIB::tcpFailedInConns.0&#13;
+BLUEARC-SERVER-MIB::tcpFailedOutConns.0</description>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Métrica física - Red</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
             </items>
             <discovery_rules>
                 <discovery_rule>
@@ -550,7 +833,7 @@ Pero no creo que merezca la pena</description>
                     </item_prototypes>
                     <trigger_prototypes>
                         <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:chassisDriveStatus[{#NODEID},{#CHASSISDRIVEID}].nodata(620)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:chassisDriveStatus[{#NODEID},{#CHASSISDRIVEID}].last()}=6</expression>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:chassisDriveStatus[{#NODEID},{#CHASSISDRIVEID}].nodata(620)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:chassisDriveStatus[{#NODEID},{#CHASSISDRIVEID}].last()}&lt;&gt;6</expression>
                             <recovery_mode>0</recovery_mode>
                             <recovery_expression/>
                             <name>{HOSTNAME} MF - Nodo {#NODEID} Fallo en chassis de disco {#CHASSISDRIVEID}</name>
@@ -621,11 +904,11 @@ Pero no creo que merezca la pena</description>
                         <item_prototype>
                             <name>Estado {#NODENAME} ({#INTERNAL_IPADDR})</name>
                             <type>4</type>
-                            <snmp_community>{SNMP_COMMUNITY}</snmp_community>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
                             <multiplier>0</multiplier>
                             <snmp_oid>BLUEARC-SERVER-MIB::clusterPNodeStatus.{#NODEID}</snmp_oid>
                             <key>clusterPNodeStatus[{#NODEID}]</key>
-                            <delay>30</delay>
+                            <delay>300</delay>
                             <history>90</history>
                             <trends>365</trends>
                             <status>0</status>
@@ -670,7 +953,7 @@ Pero no creo que merezca la pena</description>
                             <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:clusterPNodeStatus[{#NODEID}].nodata(620)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:clusterPNodeStatus[{#NODEID}].last()}&lt;&gt;4</expression>
                             <recovery_mode>0</recovery_mode>
                             <recovery_expression/>
-                            <name>{HOSTNAME} MF - {#NODENAME} no onLine</name>
+                            <name>{HOSTNAME} MF - {#NODENAME} no onLine o inalcanzable</name>
                             <correlation_mode>0</correlation_mode>
                             <correlation_tag/>
                             <url/>
@@ -806,6 +1089,88 @@ Pero no creo que merezca la pena</description>
                             <valuemap>
                                 <name>BlueArc - clusterVNodeStatus</name>
                             </valuemap>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes/>
+                    <graph_prototypes/>
+                    <host_prototypes/>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>CPUs</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <snmp_oid>discovery[{#CPUID},BLUEARC-SERVER-MIB::cpuIndex,{#NODEID},BLUEARC-SERVER-MIB::cpuUtilizationCnIndex]</snmp_oid>
+                    <key>cpu</key>
+                    <delay>300</delay>
+                    <status>0</status>
+                    <allowed_hosts/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
+                    <lifetime>30</lifetime>
+                    <description/>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Nodo {#NODEID} - CPU {#CPUID} - Porcentaje de uso</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::cpuUtilization.{#SNMPINDEX}</snmp_oid>
+                            <key>cpuUtilization[{#SNMPINDEX}]</key>
+                            <delay>30</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Métrica Física - Procesador (CPU)</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
                             <logtimefmt/>
                             <application_prototypes/>
                         </item_prototype>
@@ -978,12 +1343,12 @@ Pero no creo que merezca la pena</description>
                     <host_prototypes/>
                 </discovery_rule>
                 <discovery_rule>
-                    <name>Estadísitcas de Interfaces de Fibra</name>
+                    <name>Estadísticas de Interfaces de Fibra</name>
                     <type>4</type>
                     <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
                     <snmp_oid>discover[{#NODOID},BLUEARC-SERVER-MIB::fcStatsClusterNode,{#IFACEID},BLUEARC-SERVER-MIB::fcStatsInterfaceIndex]</snmp_oid>
                     <key>fcStats</key>
-                    <delay>30</delay>
+                    <delay>86400</delay>
                     <status>0</status>
                     <allowed_hosts/>
                     <snmpv3_contextname/>
@@ -1007,7 +1372,7 @@ Pero no creo que merezca la pena</description>
                         <formula/>
                         <conditions/>
                     </filter>
-                    <lifetime>30</lifetime>
+                    <lifetime>0</lifetime>
                     <description/>
                     <item_prototypes>
                         <item_prototype>
@@ -1327,7 +1692,7 @@ Pero no creo que merezca la pena</description>
                             <type>4</type>
                             <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
                             <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-SERVER-MIB::fcStatsPeakInRate[{#SNMPINDEX}]</snmp_oid>
+                            <snmp_oid>BLUEARC-SERVER-MIB::fcStatsPeakInRate.{#SNMPINDEX}</snmp_oid>
                             <key>fcStatsPeakInRate[{#SNMPINDEX}]</key>
                             <delay>300</delay>
                             <history>7</history>
@@ -1335,7 +1700,7 @@ Pero no creo que merezca la pena</description>
                             <status>0</status>
                             <value_type>3</value_type>
                             <allowed_hosts/>
-                            <units>B</units>
+                            <units>Bps</units>
                             <delta>0</delta>
                             <snmpv3_contextname/>
                             <snmpv3_securityname/>
@@ -1371,7 +1736,7 @@ Pero no creo que merezca la pena</description>
                             <type>4</type>
                             <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
                             <multiplier>0</multiplier>
-                            <snmp_oid>BLUEARC-SERVER-MIB::fcStatsPeakOutRate[{#SNMPINDEX}]</snmp_oid>
+                            <snmp_oid>BLUEARC-SERVER-MIB::fcStatsPeakOutRate.{#SNMPINDEX}</snmp_oid>
                             <key>fcStatsPeakOutRate[{#SNMPINDEX}]</key>
                             <delay>300</delay>
                             <history>7</history>
@@ -1379,7 +1744,7 @@ Pero no creo que merezca la pena</description>
                             <status>0</status>
                             <value_type>3</value_type>
                             <allowed_hosts/>
-                            <units>B</units>
+                            <units>Bps</units>
                             <delta>0</delta>
                             <snmpv3_contextname/>
                             <snmpv3_securityname/>
@@ -1542,8 +1907,289 @@ Pero no creo que merezca la pena</description>
                             <logtimefmt/>
                             <application_prototypes/>
                         </item_prototype>
+                        <item_prototype>
+                            <name>Nodo {#NODOID} - Tráfico de entrada {#IFACEID}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::fcStatsTotalRxBytes.{#SNMPINDEX}</snmp_oid>
+                            <key>fcStatsTotalRxBytes[{#SNMPINDEX}]</key>
+                            <delay>300</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>Bps</units>
+                            <delta>1</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Fiber Channel</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Nodo {#NODOID} - Tráfico de salida {#IFACEID}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::fcStatsTotalTxBytes.{#SNMPINDEX}</snmp_oid>
+                            <key>fcStatsTotalTxBytes[{#SNMPINDEX}]</key>
+                            <delay>300</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>Bps</units>
+                            <delta>1</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Fiber Channel</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
                     </item_prototypes>
-                    <trigger_prototypes/>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsRXEOFErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsRXEOFErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores al recibir tramas en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadCRCErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadCRCErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores CRC en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLinkFailErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLinkFailErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de link en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsDiscardedFrameErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsDiscardedFrameErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de paquetes descartados en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsProtocolErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsProtocolErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de protocolo en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsSignalLossErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsSignalLossErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de pérdida de señal en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLossSyncErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLossSyncErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de pérdida de sincronización en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadRXCharErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadRXCharErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Errores en tramas recibidos en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceStatus[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceStatus[{#SNMPINDEX}].last()}&lt;&gt;1</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Estado interfaz {#IFACEID} no es online</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceEnabled[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceEnabled[{#SNMPINDEX}].last()}&lt;&gt;1</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Interfaz {#IFACEID} no habilitada</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakInRate[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakInRate[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Nuevo pico de tráfico entrante en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakOutRate[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakOutRate[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Nodo {#NODOID} Nuevo pico de tráfico saliente en interfaz {#IFACEID}</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                    </trigger_prototypes>
                     <graph_prototypes/>
                     <host_prototypes/>
                 </discovery_rule>
@@ -1553,7 +2199,7 @@ Pero no creo que merezca la pena</description>
                     <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
                     <snmp_oid>discovery[{#FSLABEL},BLUEARC-SERVER-MIB::fsLabel]</snmp_oid>
                     <key>fs</key>
-                    <delay>30</delay>
+                    <delay>86400</delay>
                     <status>0</status>
                     <allowed_hosts/>
                     <snmpv3_contextname/>
@@ -1618,6 +2264,657 @@ Pero no creo que merezca la pena</description>
                             <applications>
                                 <application>
                                     <name>Sistemas de ficheros</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes/>
+                    <graph_prototypes/>
+                    <host_prototypes/>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Interfaces de red</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <snmp_oid>discovery[{#IFDESCR},IF-MIB::ifDescr,{#IFSPEED},IF-MIB::ifSpeed]</snmp_oid>
+                    <key>if</key>
+                    <delay>30</delay>
+                    <status>0</status>
+                    <allowed_hosts/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
+                    <lifetime>30</lifetime>
+                    <description/>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Tráfico entrante en interfaz de red {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::ethernetInBytes.{#SNMPINDEX}</snmp_oid>
+                            <key>ethernetInBytes[{#SNMPINDEX}]</key>
+                            <delay>120</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>B</units>
+                            <delta>1</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Tráfico saliente en interfaz de red {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::ethernetOutBytes.{#SNMPINDEX}</snmp_oid>
+                            <key>ethernetOutBytes[{#SNMPINDEX}]</key>
+                            <delay>30</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>B</units>
+                            <delta>1</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Tráfico entrante en interfaz de red {#IFDESCR} (Pico máximo)</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::ethernetPkInOctetRate.{#SNMPINDEX}</snmp_oid>
+                            <key>ethernetPkInOctetRate[{#SNMPINDEX}]</key>
+                            <delay>30</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>Bps</units>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Tráfico saliente en interfaz de red {#IFDESCR} (Pico máximo)</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::ethernetPkOutOctetRate.{#SNMPINDEX}</snmp_oid>
+                            <key>ethernetPkOutOctetRate[{#SNMPINDEX}]</key>
+                            <delay>30</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>Bps</units>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Estado administrativo de interfaz de red  {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>IF-MIB::ifAdminStatus.{#SNMPINDEX}</snmp_oid>
+                            <key>ifAdminStatus[{#SNMPINDEX}]</key>
+                            <delay>120</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>IF-MIB ifAdminStatus</name>
+                            </valuemap>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Paquetes entrantes descartados en interfaz de red {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>IF-MIB::ifInDiscards.{#SNMPINDEX}</snmp_oid>
+                            <key>ifInDiscards[{#SNMPINDEX}]</key>
+                            <delay>120</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Protocolo desconocido en tráfico entrante en interfaz de red {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>IF-MIB::ifInUnknownProtos.{#SNMPINDEX}</snmp_oid>
+                            <key>ifInUnknownProtos[{#SNMPINDEX}]</key>
+                            <delay>30</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Estado operativo de interfaz de red {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>IF-MIB::ifOperStatus.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOperStatus[{#SNMPINDEX}]</key>
+                            <delay>30</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>IF-MIB ifOperStatus</name>
+                            </valuemap>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Paquetes salientes descartados en interfaz de red {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>IF-MIB::ifOutDiscards.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOutDiscards[{#SNMPINDEX}]</key>
+                            <delay>120</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFDESCR}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Errores salientes en interfaz de red {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>IF-MIB::ifOutErrors.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOutErrors[{#SNMPINDEX}]</key>
+                            <delay>120</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description>Interfaz: {#IFNAME}&#13;
+Velocidad:  {#IFSPEED} Bps</description>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Paquetes inválidos en interfaz {#IFDESCR}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::tcpIPRxInvalidPkts.{#SNMPINDEX}</snmp_oid>
+                            <key>tcpIPRxInvalidPkts[{#SNMPINDEX}]</key>
+                            <delay>120</delay>
+                            <history>7</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Interfaces de Red</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:ifAdminStatus[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Estado administrativo de interfaz - {#IFDESCR} ha cambiado</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>3</priority>
+                            <description>El interfaz ha cambiado de estado de forma administrativa</description>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:ifOperStatus[{#SNMPINDEX}].nodata(620)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:ifOperStatus[{#SNMPINDEX}].last()}&lt;&gt;1</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>{HOSTNAME} MF - Estado operativo de interfaz - {#IFDESCR} caido</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                    </trigger_prototypes>
+                    <graph_prototypes/>
+                    <host_prototypes/>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>NFS Shares</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <snmp_oid>discovery[{#SHARENAME},BLUEARC-SERVER-MIB::nfsExportsName]</snmp_oid>
+                    <key>nfsExportsName</key>
+                    <delay>30</delay>
+                    <status>0</status>
+                    <allowed_hosts/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
+                    <lifetime>30</lifetime>
+                    <description/>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>NFS Share - {#SHARENAME} Evs propietario</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-SERVER-MIB::nfsExportsName.{#SNMPINDEX}</snmp_oid>
+                            <key>nfsExportsEvs[{#SHARENAME}]</key>
+                            <delay>3600</delay>
+                            <history>7</history>
+                            <trends>0</trends>
+                            <status>0</status>
+                            <value_type>4</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>NFS SHare</name>
                                 </application>
                             </applications>
                             <valuemap/>
@@ -1707,200 +3004,7 @@ Pero no creo que merezca la pena</description>
                             <application_prototypes/>
                         </item_prototype>
                     </item_prototypes>
-                    <trigger_prototypes>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsRXEOFErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsRXEOFErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores al recibir tramas en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadCRCErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadCRCErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores CRC en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLinkFailErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLinkFailErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de link en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsProtocolErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsProtocolErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de protocolo en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsSignalLossErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsSignalLossErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de pérdida de señal en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLossSyncErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsLossSyncErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de pérdida de sincronización en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsDiscardedFrameErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsDiscardedFrameErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores de paquetes descartados en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadRXCharErrors[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsBadRXCharErrors[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Errores en tramas recibidos en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceStatus[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceStatus[{#SNMPINDEX}].last()}&lt;&gt;1</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Estado interfaz {#IFACEID} no es online</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceEnabled[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsInterfaceEnabled[{#SNMPINDEX}].last()}&lt;&gt;1</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Interfaz {#IFACEID} no habilitada</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakInRate[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakInRate[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Nuevo pico de tráfico entrante en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakOutRate[{#SNMPINDEX}].nodata(7200)}=1 or {Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcStatsPeakOutRate[{#SNMPINDEX}].abschange()}&lt;&gt;0</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-			    <name>{HOSTNAME} MF - Nodo {#NODOID} Nuevo pico de tráfico saliente en interfaz {#IFACEID}</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>4</priority>
-                            <description></description>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                    </trigger_prototypes>
+                    <trigger_prototypes/>
                     <graph_prototypes>
                         <graph_prototype>
                             <name>Nodo {#NODEID} - Operaciones por segundo</name>
@@ -2266,6 +3370,88 @@ Pero no creo que merezca la pena</description>
                     <host_prototypes/>
                 </discovery_rule>
                 <discovery_rule>
+                    <name>Cifs Shares</name>
+                    <type>4</type>
+                    <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                    <snmp_oid>discovery[{#SHARENAME},BLUEARC-TITAN-MIB::virtualVolumeTitanName, {#SPANID},BLUEARC-TITAN-MIB::virtualVolumeTitanSpanId]</snmp_oid>
+                    <key>virtualVolumeTitanName</key>
+                    <delay>86400</delay>
+                    <status>0</status>
+                    <allowed_hosts/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
+                    <lifetime>30</lifetime>
+                    <description/>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Cifs Share propietario de {#SHARENAME}</name>
+                            <type>4</type>
+                            <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
+                            <multiplier>0</multiplier>
+                            <snmp_oid>BLUEARC-TITAN-MIB::virtualVolumeTitanSpanId.{#SNMPINDEX}</snmp_oid>
+                            <key>virtualVolumeTitanSpanId[{#SPANID},{#SHARENAME}]</key>
+                            <delay>30</delay>
+                            <history>90</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>Cluster - Cifs Shares</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes/>
+                    <graph_prototypes/>
+                    <host_prototypes/>
+                </discovery_rule>
+                <discovery_rule>
                     <name>Volumenes para Filesystems</name>
                     <type>4</type>
                     <snmp_community>{$SNMP_COMMUNITY}</snmp_community>
@@ -2475,7 +3661,23 @@ Pero no creo que merezca la pena</description>
             <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:fcIOStatusFails.abschange()}&lt;&gt;0</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
-            <name>Fallo en transmisión de paquetes de fibra</name>
+            <name>{HOSTNAME} MF - Fallo en transmisión de paquetes de fibra</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>4</priority>
+            <description/>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+        </trigger>
+        <trigger>
+            <expression>{Plantilla_Hitachi_NAS_Cluster_HNASCLUSTER:ndmpCurrentStatus.last()}&lt;&gt;1</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>{HOSTNAME} SRV - NMDP no activo</name>
             <correlation_mode>0</correlation_mode>
             <correlation_tag/>
             <url/>
@@ -2677,6 +3879,55 @@ Pero no creo que merezca la pena</description>
                 </mapping>
             </mappings>
         </value_map>
+        <value_map>
+            <name>IF-MIB ifAdminStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>up</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>down</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>testing</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>IF-MIB ifOperStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>up</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>down</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>testing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>unknown</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>dormant</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>notPresent</newvalue>
+                </mapping>
+                <mapping>
+                    <value>7</value>
+                    <newvalue>lowerLayerDown</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
     </value_maps>
 </zabbix_export>
-	    
